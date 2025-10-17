@@ -1,0 +1,62 @@
+[
+    {
+        "transaction_id": "John Doe0",
+        "type": "income",
+        "user_id": "abc-123-def-456",
+        "amount": 2500.00,
+        "date": "2025-10-01",
+        "category": "other",
+        "description": "Monthly salary",
+        "payment_method": "debit"
+    },
+    {
+        "transaction_id": "John Doe1",
+        "type": "expense",
+        "user_id": "abc-123-def-456",
+        "amount": 50.75,
+        "date": "2025-10-05",
+        "category": "food",
+        "description": "Grocery shopping",
+        "payment_method": "credit"
+    },
+    {
+        "transaction_id": "John Doe2",
+        "type": "expense",
+        "user_id": "abc-123-def-456",
+        "amount": 25.50,
+        "date": "2025-10-08",
+        "category": "transport",
+        "description": "Gas station",
+        "payment_method": "cash"
+    },
+    {
+        "transaction_id": "John Doe3",
+        "type": "expense",
+        "user_id": "abc-123-def-456",
+        "amount": 120.00,
+        "date": "2025-10-10",
+        "category": "entertainment",
+        "description": "Concert tickets",
+        "payment_method": "credit"
+    },
+    {
+        "transaction_id": "John Doe4",
+        "type": "income",
+        "user_id": "abc-123-def-456",
+        "amount": 500.00,
+        "date": "2025-10-15",
+        "category": "other",
+        "description": "Freelance project payment",
+        "payment_method": "debit"
+    },
+    {
+        "transaction_id": "John Doe5",
+        "type": "expense",
+        "user_id": "abc-123-def-456",
+        "amount": 15.99,
+        "date": "2025-10-17",
+        "category": "food",
+        "description": "Coffee shop",
+        "payment_method": "credit"
+    }
+]
