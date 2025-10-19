@@ -404,6 +404,142 @@ def create_transaction(current_user):
 
     return Transaction( t_id, t_type, t_userId, t_amount, t_date, t_category, t_description, t_payment_method )
 
+def filter_transactions_by_category(transaction_list):
+    """
+    Filter transactions by category.
+    
+    Args:
+        transaction_list: List of Transaction objects
+        category: Category to filter by (string)
+        
+    Returns:
+        List of Transaction objects matching the category
+    """
+    category_options = ["food", "transport", "entertainment", "other"]
+    print("\nSelect category You want to filter by:")
+    for i, option in enumerate(category_options, 1):
+        print(f"[{i}] {option.capitalize()}")
+    while True:
+        try:
+            t_category_choice = int(input("Enter choice (1-4): "))
+            if 1 <= t_category_choice <= len(category_options):
+                t_category = category_options[t_category_choice - 1]
+                break
+            else:
+                print("❌ Invalid choice. Please select between 1 and 4.")
+        except ValueError:
+            print("❌ Please enter a number, not text.")
+    filtered = [t for t in transaction_list if t.category == t_category]
+    for t in filtered:
+        print(t)
+    sortOrnot = input("Do you want to sort the results? (y/n): ").strip().lower()
+    if sortOrnot == 'y' or sortOrnot == 'yes':
+        sort_transactions(filtered)
+
+def filter_transactions_by_amount_range(transaction_list):
+    """
+    Filter transactions by amount range.
+    
+    Args:
+        transaction_list: List of Transaction objects
+        min_amount: Minimum amount (float)
+        max_amount: Maximum amount (float)
+        
+    Returns:
+        List of Transaction objects within the amount range
+    """
+    while True:
+        try:
+            min_amount = float(input("Enter minimum amount: "))
+            max_amount = float(input("Enter maximum amount: "))
+            if min_amount < 0 or max_amount < 0:
+                print("❌ Amounts must be non-negative.")
+                continue
+            if min_amount > max_amount:
+                print("❌ Minimum cannot be greater than maximum.")
+                continue
+            break
+        except ValueError:
+            print("❌ Please enter valid numbers.")
+
+    filtered = [t for t in transaction_list if min_amount <= t.amount <= max_amount]
+    for t in filtered:
+        print(t)
+    sortOrnot = input("Do you want to sort the results? (y/n): ").strip().lower()
+    if sortOrnot == 'y' or sortOrnot == 'yes':
+        sort_transactions(filtered) 
+
+def sort_transactions(transaction_list):
+    """
+    Sort transactions by a specified field.
+    
+    Args:
+        transaction_list: List of Transaction objects
+        sort_by: Field to sort by ("date", "amount", "category")
+        descending: Whether to sort in descending order (bool)
+    """
+    valid_sort_fields = ["date", "amount", "category"]
+    print("\nSelect field You want to sort by:")
+    for i, option in enumerate(valid_sort_fields, 1):
+        print(f"[{i}] {option.capitalize()}")
+    while True:
+        try:
+            t_sort_choice = int(input("Enter choice (1-3): "))
+            if 1 <= t_sort_choice <= len(valid_sort_fields):
+                sort_by = valid_sort_fields[t_sort_choice - 1]
+                break
+            else:
+                print("❌ Invalid choice. Please select between 1 and 3.")
+        except ValueError:
+            print("❌ Please enter a number, not text.")
+
+    # Ask for sort order
+    while True:
+        order = input("Sort order (asc/desc): ").strip().lower()
+        if order in ["asc", "desc"]:
+            descending = (order == "desc")
+            break
+        print("❌ Invalid input. Please enter 'asc' or 'desc'.")
+
+    # Sort the transactions
+    sorted_list = sorted(transaction_list, key=lambda x: getattr(x, sort_by), reverse=descending)
+    print(f"\n✅ Transactions sorted by {sort_by} in {'descending' if descending else 'ascending'} order.")
+    for t in sorted_list:
+        print(t)
+
+def search_transactions_by_date_range(transaction_list):
+    """
+    Search transactions within a date range.
+    
+    Args:
+        transaction_list: List of Transaction objects
+        start_date: Start date (datetime.date)
+        end_date: End date (datetime.date)
+        
+    Returns:
+        List of Transaction objects within the date range
+    """
+    while True:
+        try:
+            start_input = input("Enter start date (YYYY-MM-DD): ").strip()
+            end_input = input("Enter end date (YYYY-MM-DD): ").strip()
+            start_date = datetime.datetime.strptime(start_input, "%Y-%m-%d").date()
+            end_date = datetime.datetime.strptime(end_input, "%Y-%m-%d").date()
+            if start_date > end_date:
+                print("❌ Start date cannot be after end date.")
+                continue
+            break
+        except ValueError:
+            print("❌ Invalid date format. Please try again.")
+
+    filtered = [t for t in transaction_list if start_date <= t.date <= end_date]
+    for t in filtered:
+        print(t)
+    
+    sortOrnot = input("Do you want to sort the results? (y/n): ").strip().lower()
+    if sortOrnot == 'y' or sortOrnot == 'yes':
+        sort_transactions(filtered)
+
 # =============================================================Transaction Class=================================================================
 
 
@@ -490,45 +626,49 @@ class Transaction:
 # =============================================================Main Menu=================================================================
 
 current_user = user1
+def Transaction_Manager():
+    while True:   
+        show_menu()
+        choice = input().strip()
+        transaction_list = read_transaction_file(current_user)  # Ensure file exists before operations
+        if choice == '1':
+            # Code to add income/expense
+            new_transaction = create_transaction(current_user)
+            add_transaction(current_user, new_transaction)
 
-while True:
-    show_menu()
-    choice = input().strip()
-    transaction_list = read_transaction_file(current_user)  # Ensure file exists before operations
-    if choice == '1':
-        # Code to add income/expense
-        new_transaction = create_transaction(current_user)
-        add_transaction(current_user, new_transaction)
+        elif choice == '2':
+            # Code to view all transactions
+            for t in transaction_list:
+                print(t)
 
-    elif choice == '2':
-        # Code to view all transactions
-        for t in transaction_list:
-            print(t)
+        elif choice == '3':
+            # Code to edit a transaction
+            transaction_id = input("Enter Transaction ID to edit: ").strip()
+            edit_transaction(current_user, transaction_id)
+            
+        elif choice == '4':
+            # Code to delete a transaction
+            transaction_id = input("Enter Transaction ID to delete: ").strip()
+            delete_transaction(current_user, transaction_id)
 
-    elif choice == '3':
-        # Code to edit a transaction
-        transaction_id = input("Enter Transaction ID to edit: ").strip()
-        edit_transaction(current_user, transaction_id)
-        
-    elif choice == '4':
-        # Code to delete a transaction
-        transaction_id = input("Enter Transaction ID to delete: ").strip()
-        delete_transaction(current_user, transaction_id)
+        elif choice == '5':
+            search_transactions_by_date_range(transaction_list)
+            # Code to search transactions by date range
 
-    elif choice == '5':
-        print("Search by Date Range")
-        # Code to search transactions by date range
-    elif choice == '6':
-        print("Filter by Category")
-        # Code to filter transactions by category
-    elif choice == '7':
-        print("Filter by Amount Range")
-        # Code to filter transactions by amount range
-    elif choice == '8':
-        print("Sort Results")
-        # Code to sort transaction results
-    elif choice == '0':
-        print("Exiting the program. Goodbye!")
-        break
-    else:
-        print("Invalid choice. Please try again.")
+        elif choice == '6':
+            filter_transactions_by_category(transaction_list)
+            # Code to filter transactions by category
+
+        elif choice == '7':
+            filter_transactions_by_amount_range(transaction_list)
+            # Code to filter transactions by amount range
+            
+        elif choice == '8':
+            sort_transactions(transaction_list)
+            # Code to sort transaction results
+
+        elif choice == '0':
+            print("Exiting the program. Goodbye!")
+            return
+        else:
+            print("Invalid choice. Please try again.")
