@@ -68,14 +68,22 @@ def register_user():
             break
     hashed_pw = hash_password(password)
 
+    existing_ids = [
+        user.get("id", 0) for user in users.values() if isinstance(user, dict)
+    ]
+    last_id = max(existing_ids) if existing_ids else 0
+    new_id = last_id + 1
+
     users[username] = {
+        'id': new_id,
         'password':  hashed_pw,
         'email': email,
         'balance' : 0.0
     }
 
     save_users(users)
-    print(f"✅ User '{username}' registered successfully!\n")
+    print(f"✅ User '{username}' registered successfully!\n"
+          f"   your user ID is {new_id}.")
 
 
 def login_user():

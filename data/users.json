@@ -3,5 +3,11 @@
         "password": "f4a4ce5fa6340a35aa5db0b4b6d31a6fbaa6052356460dbb0537657d803f5be2",
         "email": "mo",
         "balance": 0.0
+    },
+    "moo": {
+        "id": 1,
+        "password": "8873b3d85375543a76db6e70c9d8f6a76763ec5418367e52abc564885bc07cd2",
+        "email": "mo@mo.mo",
+        "balance": 0.0
     }
 }
