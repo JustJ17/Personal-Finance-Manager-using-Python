@@ -2,9 +2,18 @@ from user_manager import *
 
 print("=== Welcome to the User System ===")
 while True:
-    print("\n1. Register")
-    print("2. Login")
-    print("3. Exit")
+    
+   
+    print("""
+        ╔══════════════════════════════════════════════════════╗
+        ║            💰 PERSONAL FINANCE MANAGER 💰            ║
+        ╠══════════════════════════════════════════════════════╣
+        ║ [1] Register                                         ║
+        ║ [2] Login                                            ║
+        ║ [3] Exit                                             ║
+        ╚══════════════════════════════════════════════════════╝
+        👉 Please enter your choice: """)
+  
     choice = input("Choose an option: ").strip()
 
     if choice == "1":
@@ -13,10 +22,24 @@ while True:
         current_user = login_user()
         if current_user:
             get_user_balance(current_user)
-            print("Choose 1 to Switch User")
-            print("2. back to Main Menu")
+            print( ''' 
+                        ╔══════════════════════════════════════════════════════╗
+                        ║            💰 PERSONAL FINANCE MANAGER 💰            ║
+                        ╠══════════════════════════════════════════════════════╣
+                        ║ [1] Add Income / Expenses                            ║
+                        ║ [2] View All Transactions                            ║
+                        ║ [3] Edit Transactions                                ║
+                        ║ [4] Delete Transaction                               ║
+                        ║ [5] Search by Date Range                             ║
+                        ║ [6] Filter by Category                               ║
+                        ║ [7] Filter by Amount Range                           ║
+                        ║ [8] Sort Results                                     ║
+                        ║ [9] Switch User                                      ║
+                        ║ [0] back to Main Menu                                ║
+                        ╚══════════════════════════════════════════════════════╝
+               ''')
             choice = input("Choose an option: ").strip()
-            if  choice == "3":
+            if  choice == "9":
                 if current_user:
                  current_user = switch_user(current_user)
                  get_user_balance(current_user)
