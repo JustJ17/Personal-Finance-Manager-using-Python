@@ -46,7 +46,8 @@ def register_user():
     
        # === Password Validation ===
     while True:
-        password = input("Enter your password: ").strip()
+        password = input("Password must be at least 6 characters long, contain at least one uppercase letter, one lowercase letter, one number, and one special character."
+            "Enter your password:").strip()
         if len(password) < 6:
             print("⚠️ Password must be at least 6 characters long.")
         elif not re.search(r"[A-Z]", password):
