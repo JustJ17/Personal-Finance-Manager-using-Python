@@ -7,33 +7,6 @@ from decimal import Decimal # For accurate money calculations
 import uuid
 import hashlib
 
-# =============================================================Temp User Class=================================================================
-class User:
-    def __init__(self, name, password, currency="USD", user_id=None):
-        self.user_id = user_id or str(uuid.uuid4())  # use provided user_id or auto-generate
-        self.name = name
-        self.password = self.hash_password(password)  # store only hashed version
-        self.currency = currency
-        self.numberOfTransactions = 0
-
-    def hash_password(self, password):
-        """Hash the password for secure storage."""
-        return hashlib.sha256(password.encode()).hexdigest()
-
-    def to_dict(self):
-        """Convert the user object to a dictionary (for saving to JSON)."""
-        return {
-            "user_id": self.user_id,
-            "name": self.name,
-            "password": self.password,
-            "currency": self.currency
-        }
-
-    def __str__(self):
-        """Readable printout for debugging or display."""
-        return f"User({self.name}, {self.currency})"
-
-user1 = User("John Doe", "mysecretpassword", "USD", "user-1234")
 
 # =============================================================Functions=================================================================
 
@@ -50,7 +23,8 @@ def show_menu():
 ║ [6] Filter by Category                               ║
 ║ [7] Filter by Amount Range                           ║
 ║ [8] Sort Results                                     ║
-║ [0] Exit                                             ║
+║ [9] Switch User                                      ║
+║ [0] back to Main Menu                                ║
 ╚══════════════════════════════════════════════════════╝
 👉 Please enter your choice: """, end="")
     
@@ -625,8 +599,7 @@ class Transaction:
 
 # =============================================================Main Menu=================================================================
 
-current_user = user1
-def Transaction_Manager():
+def Transaction_Manager(current_user):
     while True:   
         show_menu()
         choice = input().strip()

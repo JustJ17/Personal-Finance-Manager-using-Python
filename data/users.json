@@ -9,5 +9,11 @@
         "password": "8873b3d85375543a76db6e70c9d8f6a76763ec5418367e52abc564885bc07cd2",
         "email": "mo@mo.mo",
         "balance": 0.0
+    },
+    "Gimy": {
+        "id": 2,
+        "password": "4883ea002e9cc83f23faaf922bcd92d9ed4676e6f4b46868550c42e7dbc98ab5",
+        "email": "mo@mail.com",
+        "balance": 0.0
     }
 }
