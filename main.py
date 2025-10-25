@@ -1,4 +1,6 @@
-from user_manager import *
+from user_manager import User_Manager
+
+user_manager = User_Manager()
 
 print("=== Welcome to the User System ===")
 while True:
@@ -17,11 +19,11 @@ while True:
     choice = input("Choose an option: ").strip()
 
     if choice == "1":
-        register_user()
+        user_manager.register_user()
     elif choice == "2":
-        current_user = login_user()
+        current_user = user_manager.login_user()
         if current_user:
-            get_user_balance(current_user)
+            user_manager.get_user_balance(current_user)
             print( ''' 
                         ╔══════════════════════════════════════════════════════╗
                         ║            💰 PERSONAL FINANCE MANAGER 💰            ║
@@ -41,8 +43,8 @@ while True:
             choice = input("Choose an option: ").strip()
             if  choice == "9":
                 if current_user:
-                 current_user = switch_user(current_user)
-                 get_user_balance(current_user)
+                    current_user = user_manager.switch_user(current_user)
+                    user_manager.get_user_balance(current_user)
             elif choice == "2":
                 continue
             else:
