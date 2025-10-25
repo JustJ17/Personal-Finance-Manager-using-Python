@@ -1,7 +1,8 @@
 from enum import Enum
 import datetime # For date/time handling
 import json # For JSON data storage
-import os # For file operations
+import os
+import shutil # For file operations
 from recurring_transactions_manager import *
 
 # =============================================================Functions=================================================================
@@ -890,7 +891,21 @@ def spending_trends(transaction_list):
     
     print("="*80 + "\n")
 
+def create_backup_transaction_file(user):
+    """
+    Create a backup of the user's transaction file.
+    
+    Args:
+        user: User object
+    """
+    original_file = f"transactions_{user.name}_{user.user_id}.json"
+    backup_file = f"transactions_{user.name}_{user.user_id}_backup.json"
 
+    try:
+        shutil.copyfile(original_file, backup_file)
+        print(f"✅ Backup created: {backup_file}")
+    except Exception as e:
+        print(f"❌ Failed to create backup: {e}")
 # =============================================================Transaction Class=================================================================
 
 
@@ -977,7 +992,11 @@ class Transaction:
 # =============================================================Main Menu=================================================================
 
 def Transaction_Manager(current_user):
-    while True:   
+    """
+    Main transaction management loop for the user.
+    """
+    create_backup_transaction_file(current_user)
+    while True:
         transaction_list = read_transaction_file(current_user)  # Ensure file exists before operations
         dashboard_summary(transaction_list)
         check_recurring_transactions(current_user)
@@ -1042,6 +1061,7 @@ def Transaction_Manager(current_user):
 
         elif choice == '0':
             print("Returning to main menu!")
+            create_backup_transaction_file(current_user)
             return
         else:
             print("Invalid choice. Please try again.")
