@@ -1,5 +1,5 @@
 from enum import Enum
-from transaction_manager import * # Assuming this module contains Transaction class and create_transaction function
+from transaction_manager import Transaction, create_transaction # Assuming this module contains Transaction class and create_transaction function
 import datetime # For date/time handling
 import json # For JSON data storage
 import os # For file operations
@@ -232,6 +232,7 @@ def check_recurring_transactions(current_user):
             print("✅ Bills applied successfully.")
     else:
         print("No bills due Today.")
+
 def apply_recurring_transactions(current_user):
     """
     Check and apply due recurring transactions for the current user.
