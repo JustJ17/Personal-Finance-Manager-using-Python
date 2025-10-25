@@ -2,7 +2,7 @@ from enum import Enum
 import datetime # For date/time handling
 import json # For JSON data storage
 import os # For file operations
-
+from recurring_transactions_manager import *
 
 # =============================================================Functions=================================================================
 
@@ -23,6 +23,7 @@ def show_menu():
 ║ [10] Monthly Reports                                 ║
 ║ [11] Category Breakdown                              ║
 ║ [12] Spending Trends                                 ║
+║ [13] Recurring Transactions                          ║
 ║ [0] Exit                                             ║
 ╚══════════════════════════════════════════════════════╝
 👉 Please enter your choice: """, end="")
@@ -888,6 +889,8 @@ def spending_trends(transaction_list):
             print(f"   ➡️ Spending has remained STABLE")
     
     print("="*80 + "\n")
+
+
 # =============================================================Transaction Class=================================================================
 
 
@@ -977,6 +980,7 @@ def Transaction_Manager(current_user):
     while True:   
         transaction_list = read_transaction_file(current_user)  # Ensure file exists before operations
         dashboard_summary(transaction_list)
+        check_recurring_transactions(current_user)
         show_menu()
         choice = input().strip()
         transaction_list = read_transaction_file(current_user)  # Ensure file exists before operations
@@ -1019,6 +1023,7 @@ def Transaction_Manager(current_user):
         elif choice == '9':
             print("Switching user...")
             # Code to switch user
+        
         elif choice == '10':
             monthly_report(transaction_list)
             # Code to generate monthly reports
@@ -1030,6 +1035,10 @@ def Transaction_Manager(current_user):
         elif choice == '12':
             spending_trends(transaction_list)
             # Code to analyze spending trends
+
+        elif choice == '13':
+            recurring_transactions_menu(current_user)
+            # Code to add recuring transactions
 
         elif choice == '0':
             print("Returning to main menu!")
