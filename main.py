@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 from user_manager import User_Manager
 
 user_manager = User_Manager()
+=======
+from user_manager import *
+from transaction_manager import *
+>>>>>>> Gimy
 
 print("=== Welcome to the User System ===")
 while True:
@@ -23,6 +28,7 @@ while True:
     elif choice == "2":
         current_user = user_manager.login_user()
         if current_user:
+<<<<<<< HEAD
             user_manager.get_user_balance(current_user)
             print( ''' 
                         ╔══════════════════════════════════════════════════════╗
@@ -41,6 +47,9 @@ while True:
                         ╚══════════════════════════════════════════════════════╝
                ''')
             choice = input("Choose an option: ").strip()
+=======
+            Transaction_Manager(current_user)
+>>>>>>> Gimy
             if  choice == "9":
                 if current_user:
                     current_user = user_manager.switch_user(current_user)

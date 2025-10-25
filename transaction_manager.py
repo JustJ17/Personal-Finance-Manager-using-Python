@@ -1,46 +1,15 @@
 from enum import Enum
 import datetime # For date/time handling
-import csv # For CSV file operations
 import json # For JSON data storage
 import os # For file operations
-from decimal import Decimal # For accurate money calculations 
-import uuid
-import hashlib
 
-# =============================================================Temp User Class=================================================================
-class User:
-    def __init__(self, name, password, currency="USD", user_id=None):
-        self.user_id = user_id or str(uuid.uuid4())  # use provided user_id or auto-generate
-        self.name = name
-        self.password = self.hash_password(password)  # store only hashed version
-        self.currency = currency
-        self.numberOfTransactions = 0
-
-    def hash_password(self, password):
-        """Hash the password for secure storage."""
-        return hashlib.sha256(password.encode()).hexdigest()
-
-    def to_dict(self):
-        """Convert the user object to a dictionary (for saving to JSON)."""
-        return {
-            "user_id": self.user_id,
-            "name": self.name,
-            "password": self.password,
-            "currency": self.currency
-        }
-
-    def __str__(self):
-        """Readable printout for debugging or display."""
-        return f"User({self.name}, {self.currency})"
-
-user1 = User("John Doe", "mysecretpassword", "USD", "user-1234")
 
 # =============================================================Functions=================================================================
 
 def show_menu():
     print("""
 ╔══════════════════════════════════════════════════════╗
-║            💰 PERSONAL FINANCE MANAGER 💰            ║
+║            💰 PERSONAL FINANCE MANAGER 💰           ║
 ╠══════════════════════════════════════════════════════╣
 ║ [1] Add Income / Expenses                            ║
 ║ [2] View All Transactions                            ║
@@ -50,6 +19,10 @@ def show_menu():
 ║ [6] Filter by Category                               ║
 ║ [7] Filter by Amount Range                           ║
 ║ [8] Sort Results                                     ║
+║ [9] Switch User                                      ║
+║ [10] Monthly Reports                                 ║
+║ [11] Category Breakdown                              ║
+║ [12] Spending Trends                                 ║
 ║ [0] Exit                                             ║
 ╚══════════════════════════════════════════════════════╝
 👉 Please enter your choice: """, end="")
@@ -540,6 +513,381 @@ def search_transactions_by_date_range(transaction_list):
     if sortOrnot == 'y' or sortOrnot == 'yes':
         sort_transactions(filtered)
 
+def dashboard_summary(transaction_list):
+    """
+    Display a summary dashboard of transactions.
+    
+    Args:
+        transaction_list: List of Transaction objects
+    """
+    total_income = sum(t.amount for t in transaction_list if t.type == "income")
+    total_expense = sum(t.amount for t in transaction_list if t.type == "expense")
+    net_balance = total_income - total_expense
+
+    print("\n" + "="*40)
+    print("📊 DASHBOARD SUMMARY")
+    print("="*40)
+    print(f"Total Income : ${total_income:.2f}")
+    print(f"Total Expense: ${total_expense:.2f}")
+    print(f"Net Balance  : ${net_balance:.2f}")
+    print("="*40 + "\n")
+
+def monthly_report(transaction_list):
+        """
+        Generate a monthly financial report with income, expenses, net balance, and most spent category.
+        
+        Args:
+            transaction_list: List of Transaction objects
+        """
+        if not transaction_list:
+            print("❌ No transactions found. Cannot generate report.")
+            return
+        
+        # Step 1: Get all unique months from transactions
+        available_months = {}  # {(year, month): "display_string"}
+        current_date = datetime.datetime.now()
+        current_month = (current_date.year, current_date.month)
+        
+        for trans in transaction_list:
+            year = trans.date.year
+            month = trans.date.month
+            month_key = (year, month)
+            
+            if month_key not in available_months:
+                month_name = datetime.datetime(year, month, 1).strftime("%B %Y")
+                available_months[month_key] = month_name
+        
+        # Sort months chronologically (oldest to newest)
+        sorted_months = sorted(available_months.keys())
+        
+        if not sorted_months:
+            print("❌ No valid dates found in transactions.")
+            return
+        
+        # Step 2: Display menu with current month option
+        print("\n" + "="*60)
+        print("📅 MONTHLY REPORT - SELECT MONTH")
+        print("="*60)
+        
+        # Check if current month has transactions
+        if current_month in available_months:
+            print("[0] Current Month (Default) - " + available_months[current_month])
+            print("-" * 60)
+        
+        print("Available months:")
+        for i, month_key in enumerate(sorted_months, 1):
+            marker = " ← Current" if month_key == current_month else ""
+            print(f"[{i}] {available_months[month_key]}{marker}")
+        
+        print("="*60)
+        
+        # Step 3: Get user choice
+        while True:
+            choice_input = input("👉 Select month (0 for current, or number): ").strip()
+            
+            # Default to current month if empty and current month exists
+            if not choice_input:
+                if current_month in available_months:
+                    selected_month = current_month
+                    break
+                else:
+                    print("❌ Current month has no transactions. Please select a valid month.")
+                    continue
+            
+            try:
+                choice = int(choice_input)
+                
+                # Option 0: Current month
+                if choice == 0:
+                    if current_month in available_months:
+                        selected_month = current_month
+                        break
+                    else:
+                        print("❌ No transactions in current month. Please select another.")
+                        continue
+                
+                # Option 1-N: Specific month
+                elif 1 <= choice <= len(sorted_months):
+                    selected_month = sorted_months[choice - 1]
+                    break
+                else:
+                    print(f"❌ Invalid choice. Please select between 0 and {len(sorted_months)}.")
+            except ValueError:
+                print("❌ Please enter a valid number.")
+        
+        # Step 4: Filter transactions for selected month
+        selected_year, selected_month_num = selected_month
+        monthly_transactions = [
+            t for t in transaction_list 
+            if t.date.year == selected_year and t.date.month == selected_month_num
+        ]
+        
+        if not monthly_transactions:
+            print(f"❌ No transactions found for {available_months[selected_month]}.")
+            return
+        
+        # Step 5: Calculate statistics
+        total_income = sum(t.amount for t in monthly_transactions if t.type == "income")
+        total_expense = sum(t.amount for t in monthly_transactions if t.type == "expense")
+        net_balance = total_income - total_expense
+        
+        # Step 6: Find most spent category
+        category_spending = {}
+        for trans in monthly_transactions:
+            if trans.type == "expense":
+                if trans.category not in category_spending:
+                    category_spending[trans.category] = 0
+                category_spending[trans.category] += trans.amount
+        
+        most_spent_category = None
+        max_spent = 0
+        if category_spending:
+            most_spent_category = max(category_spending, key=category_spending.get)
+            max_spent = category_spending[most_spent_category]
+        
+        # Step 7: Display the report
+        month_display = available_months[selected_month]
+        
+        print("\n" + "="*70)
+        print(f"📊 MONTHLY REPORT - {month_display.upper()}")
+        print("="*70)
+        print(f"📅 Period: {month_display}")
+        print(f"📝 Total Transactions: {len(monthly_transactions)}")
+        print("-"*70)
+        
+        print(f"\n💰 INCOME")
+        print(f"   Total Income:     ${total_income:>12,.2f}")
+        
+        print(f"\n💸 EXPENSES")
+        print(f"   Total Expenses:   ${total_expense:>12,.2f}")
+        
+        print(f"\n📈 NET BALANCE")
+        balance_symbol = "+" if net_balance >= 0 else ""
+        balance_indicator = "✅" if net_balance >= 0 else "⚠️"
+        print(f"   {balance_indicator} Net Balance:     {balance_symbol}${net_balance:>12,.2f}")
+        
+        if most_spent_category:
+            print(f"\n🏆 MOST SPENT CATEGORY")
+            print(f"   Category: {most_spent_category.capitalize()}")
+            print(f"   Amount:   ${max_spent:>12,.2f}")
+            if total_expense > 0:
+                percentage = (max_spent / total_expense) * 100
+                print(f"   Percentage of total expenses: {percentage:.1f}%")
+        else:
+            print(f"\n🏆 MOST SPENT CATEGORY")
+            print(f"   No expenses recorded this month")
+        
+        # Step 8: Category breakdown (optional, but useful)
+        if category_spending:
+            print(f"\n📊 EXPENSE BREAKDOWN BY CATEGORY")
+            print("-"*70)
+            # Sort categories by spending (highest first)
+            sorted_categories = sorted(category_spending.items(), key=lambda x: x[1], reverse=True)
+            for category, amount in sorted_categories:
+                percentage = (amount / total_expense) * 100 if total_expense > 0 else 0
+                bar_length = int(percentage / 5)  # 20 chars max (100% / 5)
+                bar = "█" * bar_length
+                print(f"   {category.capitalize():<15} ${amount:>10,.2f}  {percentage:>5.1f}% {bar}")
+        
+        print("="*70 + "\n")
+        
+        # Step 9: Ask if user wants to see detailed transactions
+        show_details = input("Would you like to see detailed transactions? (y/n): ").strip().lower()
+        if show_details == 'y' or show_details == 'yes':
+            print("\n" + "="*70)
+            print(f"📋 DETAILED TRANSACTIONS - {month_display.upper()}")
+            print("="*70)
+            
+            # Group by type
+            income_trans = [t for t in monthly_transactions if t.type == "income"]
+            expense_trans = [t for t in monthly_transactions if t.type == "expense"]
+            
+            if income_trans:
+                print("\n💰 INCOME TRANSACTIONS:")
+                print("-"*70)
+                for trans in sorted(income_trans, key=lambda x: x.date):
+                    print(f"   {trans.date} | ${trans.amount:>10,.2f} | {trans.category:<15} | {trans.description}")
+            
+            if expense_trans:
+                print("\n💸 EXPENSE TRANSACTIONS:")
+                print("-"*70)
+                for trans in sorted(expense_trans, key=lambda x: x.date):
+                    print(f"   {trans.date} | ${trans.amount:>10,.2f} | {trans.category:<15} | {trans.description}")
+            
+            print("="*70 + "\n")        
+
+def category_breakdown(transaction_list):
+    """
+    Display a breakdown of all transactions by category (all time).
+    Shows total income and expense breakdown by category.
+    
+    Args:
+        transaction_list: List of Transaction objects
+    """
+    if not transaction_list:
+        print("❌ No transactions found. Cannot generate breakdown.")
+        return
+    
+    # Step 1: Calculate total income (all categories combined)
+    total_income = sum(t.amount for t in transaction_list if t.type == "income")
+    
+    # Step 2: Sum expenses by category
+    expense_by_category = {}
+    for trans in transaction_list:
+        if trans.type == "expense":
+            if trans.category not in expense_by_category:
+                expense_by_category[trans.category] = 0
+            expense_by_category[trans.category] += trans.amount
+    
+    # Step 3: Calculate totals
+    total_expense = sum(expense_by_category.values())
+    net_balance = total_income - total_expense
+    
+    # Step 4: Display the report
+    print("\n" + "="*70)
+    print("📊 CATEGORY BREAKDOWN - ALL TIME")
+    print("="*70)
+    
+    # Income section
+    print(f"\n💰 INCOME (All Categories)")
+    print(f"   Total Income:     ${total_income:>12,.2f}")
+    
+    # Expense section
+    print(f"\n💸 EXPENSES BY CATEGORY")
+    print("-"*70)
+    
+    if expense_by_category:
+        # Sort categories by amount (highest to lowest)
+        sorted_categories = sorted(expense_by_category.items(), 
+                                   key=lambda x: x[1], 
+                                   reverse=True)
+        
+        for category, amount in sorted_categories:
+            percentage = (amount / total_expense) * 100 if total_expense > 0 else 0
+            bar_length = int(percentage / 5)  # Visual bar (max 20 chars)
+            bar = "█" * bar_length
+            print(f"   {category.capitalize():<15} ${amount:>10,.2f}  {percentage:>5.1f}% {bar}")
+        
+        print("-"*70)
+        print(f"   {'TOTAL EXPENSES':<15} ${total_expense:>10,.2f}")
+    else:
+        print("   No expenses recorded.")
+    
+    # Net balance
+    print(f"\n📈 SUMMARY")
+    print("-"*70)
+    balance_symbol = "+" if net_balance >= 0 else ""
+    balance_indicator = "✅" if net_balance >= 0 else "⚠️"
+    print(f"   Total Income:     ${total_income:>12,.2f}")
+    print(f"   Total Expenses:   ${total_expense:>12,.2f}")
+    print(f"   {balance_indicator} Net Balance:     {balance_symbol}${net_balance:>12,.2f}")
+    
+    print("="*70 + "\n")
+
+def spending_trends(transaction_list):
+    """
+    Display spending trends across all months with visual representation.
+    Shows which months had the highest spending.
+    
+    Args:
+        transaction_list: List of Transaction objects
+    """
+    if not transaction_list:
+        print("❌ No transactions found. Cannot generate trends.")
+        return
+    
+    # Step 1: Group expenses by month
+    monthly_spending = {}  # {(year, month): total_spending}
+    
+    for trans in transaction_list:
+        if trans.type == "expense":
+            year = trans.date.year
+            month = trans.date.month
+            month_key = (year, month)
+            
+            if month_key not in monthly_spending:
+                monthly_spending[month_key] = 0
+            monthly_spending[month_key] += trans.amount
+    
+    if not monthly_spending:
+        print("❌ No expense transactions found.")
+        return
+    
+    # Step 2: Sort months chronologically
+    sorted_months = sorted(monthly_spending.keys())
+    
+    # Step 3: Find the maximum spending for scaling
+    max_spending = max(monthly_spending.values())
+    
+    # Step 4: Calculate average spending
+    avg_spending = sum(monthly_spending.values()) / len(monthly_spending)
+    
+    # Step 5: Display the trend report
+    print("\n" + "="*80)
+    print("📈 SPENDING TRENDS - ALL TIME")
+    print("="*80)
+    print(f"Months tracked: {len(sorted_months)}")
+    print(f"Average monthly spending: ${avg_spending:,.2f}")
+    print(f"Highest monthly spending: ${max_spending:,.2f}")
+    print("="*80)
+    
+    # Step 6: Display visual chart
+    print("\n📊 MONTHLY SPENDING CHART")
+    print("-"*80)
+    
+    for month_key in sorted_months:
+        year, month = month_key
+        amount = monthly_spending[month_key]
+        
+        # Format month name
+        month_name = datetime.datetime(year, month, 1).strftime("%b %Y")
+        
+        # Calculate bar length (scale to 50 characters max)
+        bar_length = int((amount / max_spending) * 50) if max_spending > 0 else 0
+        bar = "█" * bar_length
+        
+        # Indicator if above/below average
+        indicator = "🔥" if amount > avg_spending else "  "
+        
+        # Display the bar chart
+        print(f"{month_name:<12} {indicator} ${amount:>10,.2f} {bar}")
+    
+    print("-"*80)
+    print("🔥 = Above average spending")
+    print("="*80)
+    
+    # Step 7: Find highest and lowest spending months
+    highest_month = max(monthly_spending, key=monthly_spending.get)
+    lowest_month = min(monthly_spending, key=monthly_spending.get)
+    
+    highest_name = datetime.datetime(highest_month[0], highest_month[1], 1).strftime("%B %Y")
+    lowest_name = datetime.datetime(lowest_month[0], lowest_month[1], 1).strftime("%B %Y")
+    
+    print(f"\n🏆 HIGHEST SPENDING MONTH")
+    print(f"   {highest_name}: ${monthly_spending[highest_month]:,.2f}")
+    
+    print(f"\n💚 LOWEST SPENDING MONTH")
+    print(f"   {lowest_name}: ${monthly_spending[lowest_month]:,.2f}")
+    
+    # Step 8: Calculate trend (spending increasing or decreasing?)
+    if len(sorted_months) >= 2:
+        first_month_spending = monthly_spending[sorted_months[0]]
+        last_month_spending = monthly_spending[sorted_months[-1]]
+        
+        difference = last_month_spending - first_month_spending
+        percentage_change = (difference / first_month_spending * 100) if first_month_spending > 0 else 0
+        
+        print(f"\n📉 TREND ANALYSIS")
+        if difference > 0:
+            print(f"   ⬆️ Spending has INCREASED by ${difference:,.2f} ({percentage_change:+.1f}%)")
+            print(f"   From ${first_month_spending:,.2f} ({sorted_months[0][0]}-{sorted_months[0][1]:02d}) to ${last_month_spending:,.2f} ({sorted_months[-1][0]}-{sorted_months[-1][1]:02d})")
+        elif difference < 0:
+            print(f"   ⬇️ Spending has DECREASED by ${abs(difference):,.2f} ({percentage_change:.1f}%)")
+            print(f"   From ${first_month_spending:,.2f} ({sorted_months[0][0]}-{sorted_months[0][1]:02d}) to ${last_month_spending:,.2f} ({sorted_months[-1][0]}-{sorted_months[-1][1]:02d})")
+        else:
+            print(f"   ➡️ Spending has remained STABLE")
+    
+    print("="*80 + "\n")
 # =============================================================Transaction Class=================================================================
 
 
@@ -625,9 +973,10 @@ class Transaction:
 
 # =============================================================Main Menu=================================================================
 
-current_user = user1
-def Transaction_Manager():
+def Transaction_Manager(current_user):
     while True:   
+        transaction_list = read_transaction_file(current_user)  # Ensure file exists before operations
+        dashboard_summary(transaction_list)
         show_menu()
         choice = input().strip()
         transaction_list = read_transaction_file(current_user)  # Ensure file exists before operations
@@ -666,9 +1015,24 @@ def Transaction_Manager():
         elif choice == '8':
             sort_transactions(transaction_list)
             # Code to sort transaction results
+        
+        elif choice == '9':
+            print("Switching user...")
+            # Code to switch user
+        elif choice == '10':
+            monthly_report(transaction_list)
+            # Code to generate monthly reports
+
+        elif choice == '11':
+            category_breakdown(transaction_list)
+            # Code to generate category breakdown
+        
+        elif choice == '12':
+            spending_trends(transaction_list)
+            # Code to analyze spending trends
 
         elif choice == '0':
-            print("Exiting the program. Goodbye!")
+            print("Returning to main menu!")
             return
         else:
             print("Invalid choice. Please try again.")
