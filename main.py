@@ -1,10 +1,11 @@
 from user_manager import *
 from transaction_manager import *
+from recurring_transactions_manager import *
 
 user_manager = User_Manager()
 
+banner()
 
-print("=== Welcome to the User System ===")
 while True:
     
    

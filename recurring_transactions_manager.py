@@ -1,5 +1,4 @@
 from enum import Enum
-from transaction_manager import Transaction, create_transaction # Assuming this module contains Transaction class and create_transaction function
 import datetime # For date/time handling
 import json # For JSON data storage
 import os # For file operations
