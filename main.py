@@ -27,16 +27,6 @@ while True:
         current_user = user_manager.login_user()
         if current_user:
             Transaction_Manager(current_user)
->>>>>>> Gimy
-            if  choice == "9":
-                if current_user:
-                    current_user = user_manager.switch_user(current_user)
-                    user_manager.get_user_balance(current_user)
-            elif choice == "2":
-                continue
-            else:
-             print("⚠️ No user currently logged in. Please log in first.")
-
     elif choice == "3":
         print("👋 Goodbye!")
         break
