@@ -80,9 +80,11 @@ class User_Manager:
         # ✅ Update the class attribute directly
         self.users[username] = {
             "id": new_id,
+            "name": username,
             "password": hashed_pw,
             "email": email,
-            "balance": 0.0
+            "balance": 0.0,
+            "number_of_transactions": 0
         }
 
         # ✅ Save updated users
@@ -96,7 +98,7 @@ class User_Manager:
 
         if username in self.users and self.users[username]['password'] == hashed_pw:
             print(f"✅ Welcome back, {username}!")
-            return username
+            return self.users[username]
         else:
             print("❌ Invalid username or password.")
             return None

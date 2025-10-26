@@ -85,7 +85,7 @@ def recurring_transactions_menu(current_user):
 
 def read_recurring_transaction_file(user):
     # Define full path to your file
-    file_path = os.path.join('data', 'RecurringTransactions', f'RecurringTransactions_{user.name}_{user.user_id}.json')
+    file_path = os.path.join('data', 'RecurringTransactions', f'RecurringTransactions_{user["name"]}_{user["id"]}.json')
 
     try:
         # Ensure the directory exists (creates folders if missing)
@@ -104,7 +104,7 @@ def read_recurring_transaction_file(user):
                 try:
                     transactions_data = json.load(file)
                     transactions_list = [RecurringTransaction.from_dict(t) for t in transactions_data]
-                    user.numberOfTransactions = len(transactions_list)
+                    user["number_of_transactions"] = len(transactions_list)
 
                 except json.JSONDecodeError:
                     print("⚠️ Warning: Transaction file was corrupted. Starting with empty transactions.") #maybe I would want to change this later
@@ -123,7 +123,7 @@ def save_recurring_transactions_to_file(user, transaction_list):
         transaction_list: List of RecurringTransaction objects
     """
     file_path = os.path.join('data', 'RecurringTransactions', 
-                             f'RecurringTransactions_{user.name}_{user.user_id}.json')
+                             f'RecurringTransactions_{user["name"]}_{user["id"]}.json')
 
     try:
         # Convert all RecurringTransaction objects to dictionaries

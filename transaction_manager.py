@@ -31,7 +31,7 @@ def show_menu():
     
 def read_transaction_file(user):
     # Define full path to your file
-    file_path = os.path.join('data', 'transactions', f'transactions_{user.name}_{user.user_id}.json')
+    file_path = os.path.join('data', 'transactions', f'transactions_{user["name"]}_{user["id"]}.json')
 
     try:
         # Ensure the directory exists (creates folders if missing)
@@ -50,7 +50,7 @@ def read_transaction_file(user):
                 try:
                     transactions_data = json.load(file)
                     transactions_list = [Transaction.from_dict(t) for t in transactions_data]
-                    user.numberOfTransactions = len(transactions_list)
+                    user["number_of_transactions"] = len(transactions_list)
 
                 except json.JSONDecodeError:
                     print("⚠️ Warning: Transaction file was corrupted. Starting with empty transactions.") #maybe I would want to change this later
@@ -69,7 +69,7 @@ def save_transactions_to_file(user, transaction_list):
         transaction_list: List of Transaction objects
     """
     file_path = os.path.join('data', 'transactions', 
-                             f'transactions_{user.name}_{user.user_id}.json')
+                             f'transactions_{user["name"]}_{user["id"]}.json')
     
     try:
         # Convert all Transaction objects to dictionaries
@@ -129,7 +129,7 @@ def delete_transaction(user, transaction_id):
     # Save the updated list
     save_transactions_to_file(user, transactions)
     print(f"✅ Transaction '{transaction_id}' deleted successfully.")
-    user.numberOfTransactions -= 1
+    user["number_of_transactions"] -= 1
     return True
 
 def edit_transaction(user, transaction_id):
@@ -293,9 +293,9 @@ def create_transaction(current_user):
 
     print("\n🧾  Create a New Transaction")
     print("=" * 40)    
-    t_id = current_user.name + str(current_user.numberOfTransactions)
-    t_userId = current_user.user_id
-    current_user.numberOfTransactions += 1
+    t_id = current_user["name"] + str(current_user["number_of_transactions"] + 1)
+    t_userId = current_user["id"]
+    current_user["number_of_transactions"] += 1
     type_options = ["income", "expense"]
     category_options = ["food", "transport", "entertainment", "other"]
     payment_options = ["cash", "credit", "debit", "other"]
@@ -898,8 +898,8 @@ def create_backup_transaction_file(user):
     Args:
         user: User object
     """
-    original_file = f"transactions_{user.name}_{user.user_id}.json"
-    backup_file = f"transactions_{user.name}_{user.user_id}_backup.json"
+    original_file = f"transactions_{user["name"]}_{user["id"]}.json"
+    backup_file = f"transactions_{user["name"]}_{user["id"]}_backup.json"
 
     try:
         shutil.copyfile(original_file, backup_file)
@@ -1040,7 +1040,7 @@ def Transaction_Manager(current_user):
             # Code to sort transaction results
         
         elif choice == '9':
-            print("Switching user...")
+            switch_user(current_user)
             # Code to switch user
         
         elif choice == '10':
