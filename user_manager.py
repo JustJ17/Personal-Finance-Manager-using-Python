@@ -84,7 +84,13 @@ class User_Manager:
             "password": hashed_pw,
             "email": email,
             "balance": 0.0,
-            "number_of_transactions": 0
+            "number_of_transactions": 0,
+            "monthly_budget": 0.0,
+            "monthly_expenses": 0.0,
+            "savings_goal": {
+                "goal_name": "New Laptop",
+                "target_amount": 1000
+            }
         }
 
         # ✅ Save updated users
@@ -126,6 +132,43 @@ class User_Manager:
             print("✅ Balance updated successfully.")
         else:
             print("⚠️ User not found.")
+
+    def set_savings_goal(self, user):
+        """Set or update a savings goal."""
+        goal_name = input("🎯 Enter goal name: ")
+        try:
+            target = float(input("💰 Enter target amount: "))
+            if target <= 0:
+                print("⚠️ Target must be greater than 0.")
+                return
+            self.users[user['name']]['savings_goal'] = {
+                "goal_name": goal_name,
+                "target_amount": target
+            }
+            self.save_users()
+            print(f"✅ Savings goal '{goal_name}' set to ${target:.2f}")
+        except ValueError:
+            print("⚠️ Invalid amount entered.")
+
+    def check_savings_progress(self, user):
+        """Display progress toward the savings goal."""
+        name = user['name']
+        goal = self.users[name].get('savings_goal')
+        if not goal:
+            print("⚠️ No savings goal set.")
+            return
+
+        balance = self.users[name]['balance']
+        target = goal['target_amount']
+        percent = min((balance / target) * 100, 100)
+
+        print(f"🎯 Goal: {goal['goal_name']} | Target: ${target:.2f}")
+        print(f"💰 Current Savings: ${balance:.2f} ({percent:.1f}% achieved)")
+
+        if percent >= 100:
+            print("🏆 Congratulations! You've reached your savings goal!")
+
+    
 
 
 def banner():

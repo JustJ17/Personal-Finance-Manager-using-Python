@@ -4,6 +4,8 @@ import json # For JSON data storage
 import os
 import shutil # For file operations
 from recurring_transactions_manager import *
+import csv
+
 
 # =============================================================Functions=================================================================
 
@@ -25,6 +27,10 @@ def show_menu():
 ║ [11] Category Breakdown                              ║
 ║ [12] Spending Trends                                 ║
 ║ [13] Recurring Transactions                          ║
+║ [14] Monthly Budget Tracker                          ║
+║ [15] Export Transactions to CSV                      ║
+║ [16] Import Transactions from CSV                    ║
+
 ║ [0] Exit                                             ║
 ╚══════════════════════════════════════════════════════╝
 👉 Please enter your choice: """, end="")
@@ -102,6 +108,62 @@ def add_transaction(user, new_transaction):
     
     # Save back to file
     return save_transactions_to_file(user, transactions)
+
+    # === 🧮 Monthly Budget Tracking ===
+    if new_transaction["type"].lower() == "expense":
+        current_month = datetime.now().strftime("%Y-%m")
+
+        users = load_users()
+        if "monthly_expenses" not in users[user["username"]]:
+            users[user["username"]]["monthly_expenses"] = {}
+
+        if current_month not in users[user["username"]]["monthly_expenses"]:
+            users[user["username"]]["monthly_expenses"][current_month] = 0.0
+
+        users[user["username"]]["monthly_expenses"][current_month] += new_transaction["amount"]
+
+        save_users(users)
+
+    print("✅ Transaction added and monthly budget updated.")
+
+def export_transactions_to_csv(user):
+    """Export all transactions of the user to a CSV file."""
+    transactions = read_transaction_file(user)
+    if not transactions:
+        print("⚠️ No transactions to export.")
+        return
+
+    filename = f"{user.name}_transactions.csv"
+    with open(filename, "w", newline="", encoding="utf-8") as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames=transactions[0].keys())
+        writer.writeheader()
+        writer.writerows(transactions)
+    
+    print(f"✅ Transactions exported successfully to '{filename}'.")
+
+def import_transactions_from_csv(user):
+    """Import transactions from a CSV file into the user's record."""
+    filename = f"{user.name}_transactions.csv"
+    
+    if not os.path.exists(filename):
+        print(f"⚠️ No CSV file found for user {user.name}.")
+        return
+
+    with open(filename, "r", encoding="utf-8") as csvfile:
+        reader = csv.DictReader(csvfile)
+        transactions = list(reader)
+    
+    if not transactions:
+        print("⚠️ The CSV file is empty.")
+        return
+    
+    # Convert numeric fields if needed
+    for t in transactions:
+        if "amount" in t:
+            t["amount"] = float(t["amount"])
+    
+    save_transactions_to_file(user, transactions)
+    print(f"✅ Transactions imported successfully from '{filename}'.")
 
 def delete_transaction(user, transaction_id):
     """
@@ -785,6 +847,39 @@ def category_breakdown(transaction_list):
     print(f"   {balance_indicator} Net Balance:     {balance_symbol}${net_balance:>12,.2f}")
     
     print("="*70 + "\n")
+def show_monthly_budget(user):
+    """
+    Show this month's total expenses and compare them to a set budget.
+    """
+    transactions = read_transaction_file(user)
+    if not transactions:
+        print("❌ No transactions found.")
+        return
+
+    # Get current month and filter only expenses
+    current_month = datetime.datetime.now().strftime("%Y-%m")
+    monthly_expenses = [
+        t.amount for t in transactions
+        if t.type == "expense" and t.date.strftime("%Y-%m") == current_month
+    ]
+    
+    total_spent = sum(monthly_expenses)
+    
+    # You can later allow users to set this in settings
+    monthly_limit = 1000.0  
+
+    print("\n" + "="*50)
+    print("📅 MONTHLY BUDGET TRACKER")
+    print("="*50)
+    print(f"Month: {current_month}")
+    print(f"Total Spent: ${total_spent:.2f}")
+    print(f"Budget Limit: ${monthly_limit:.2f}")
+    remaining = monthly_limit - total_spent
+    if remaining >= 0:
+        print(f"✅ You have ${remaining:.2f} remaining this month.")
+    else:
+        print(f"⚠️ You are over budget by ${abs(remaining):.2f}!")
+    print("="*50 + "\n")
 
 def spending_trends(transaction_list):
     """
@@ -1058,7 +1153,18 @@ def Transaction_Manager(current_user):
         elif choice == '13':
             recurring_transactions_menu(current_user)
             # Code to add recuring transactions
+        
+        elif choice == "14":
+             show_monthly_budget(current_user)
+            # Code to track monthly budget
 
+        elif choice == "15":
+            export_transactions_to_csv(current_user)
+            # Code to export transactions to CSV
+            
+        elif choice == "16":
+            import_transactions_from_csv(current_user)
+            # Code to import transactions from CSV
         elif choice == '0':
             print("Returning to main menu!")
             create_backup_transaction_file(current_user)
