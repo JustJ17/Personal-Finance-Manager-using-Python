@@ -1,19 +1,17 @@
-<<<<<<< HEAD
-from user_manager import User_Manager
-
-user_manager = User_Manager()
-=======
 from user_manager import *
 from transaction_manager import *
->>>>>>> Gimy
+from recurring_transactions_manager import *
 
-print("=== Welcome to the User System ===")
+user_manager = User_Manager()
+
+banner()
+
 while True:
     
    
     print("""
         ╔══════════════════════════════════════════════════════╗
-        ║            💰 PERSONAL FINANCE MANAGER 💰            ║
+        ║            💰 PERSONAL FINANCE MANAGER 💰           ║
         ╠══════════════════════════════════════════════════════╣
         ║ [1] Register                                         ║
         ║ [2] Login                                            ║
@@ -29,6 +27,7 @@ while True:
         current_user = user_manager.login_user()
         if current_user:
             Transaction_Manager(current_user)
+>>>>>>> Gimy
             if  choice == "9":
                 if current_user:
                     current_user = user_manager.switch_user(current_user)

@@ -1,8 +1,9 @@
 from enum import Enum
 import datetime # For date/time handling
 import json # For JSON data storage
-import os # For file operations
-
+import os
+import shutil # For file operations
+from recurring_transactions_manager import *
 
 # =============================================================Functions=================================================================
 
@@ -23,13 +24,14 @@ def show_menu():
 ║ [10] Monthly Reports                                 ║
 ║ [11] Category Breakdown                              ║
 ║ [12] Spending Trends                                 ║
+║ [13] Recurring Transactions                          ║
 ║ [0] Exit                                             ║
 ╚══════════════════════════════════════════════════════╝
 👉 Please enter your choice: """, end="")
     
 def read_transaction_file(user):
     # Define full path to your file
-    file_path = os.path.join('data', 'transactions', f'transactions_{user.name}_{user.user_id}.json')
+    file_path = os.path.join('data', 'transactions', f'transactions_{user["name"]}_{user["id"]}.json')
 
     try:
         # Ensure the directory exists (creates folders if missing)
@@ -48,7 +50,7 @@ def read_transaction_file(user):
                 try:
                     transactions_data = json.load(file)
                     transactions_list = [Transaction.from_dict(t) for t in transactions_data]
-                    user.numberOfTransactions = len(transactions_list)
+                    user["number_of_transactions"] = len(transactions_list)
 
                 except json.JSONDecodeError:
                     print("⚠️ Warning: Transaction file was corrupted. Starting with empty transactions.") #maybe I would want to change this later
@@ -67,7 +69,7 @@ def save_transactions_to_file(user, transaction_list):
         transaction_list: List of Transaction objects
     """
     file_path = os.path.join('data', 'transactions', 
-                             f'transactions_{user.name}_{user.user_id}.json')
+                             f'transactions_{user["name"]}_{user["id"]}.json')
     
     try:
         # Convert all Transaction objects to dictionaries
@@ -127,7 +129,7 @@ def delete_transaction(user, transaction_id):
     # Save the updated list
     save_transactions_to_file(user, transactions)
     print(f"✅ Transaction '{transaction_id}' deleted successfully.")
-    user.numberOfTransactions -= 1
+    user["number_of_transactions"] -= 1
     return True
 
 def edit_transaction(user, transaction_id):
@@ -291,9 +293,9 @@ def create_transaction(current_user):
 
     print("\n🧾  Create a New Transaction")
     print("=" * 40)    
-    t_id = current_user.name + str(current_user.numberOfTransactions)
-    t_userId = current_user.user_id
-    current_user.numberOfTransactions += 1
+    t_id = current_user["name"] + str(current_user["number_of_transactions"] + 1)
+    t_userId = current_user["id"]
+    current_user["number_of_transactions"] += 1
     type_options = ["income", "expense"]
     category_options = ["food", "transport", "entertainment", "other"]
     payment_options = ["cash", "credit", "debit", "other"]
@@ -888,6 +890,22 @@ def spending_trends(transaction_list):
             print(f"   ➡️ Spending has remained STABLE")
     
     print("="*80 + "\n")
+
+def create_backup_transaction_file(user):
+    """
+    Create a backup of the user's transaction file.
+    
+    Args:
+        user: User object
+    """
+    original_file = f"transactions_{user["name"]}_{user["id"]}.json"
+    backup_file = f"transactions_{user["name"]}_{user["id"]}_backup.json"
+
+    try:
+        shutil.copyfile(original_file, backup_file)
+        print(f"✅ Backup created: {backup_file}")
+    except Exception as e:
+        print(f"❌ Failed to create backup: {e}")
 # =============================================================Transaction Class=================================================================
 
 
@@ -974,9 +992,14 @@ class Transaction:
 # =============================================================Main Menu=================================================================
 
 def Transaction_Manager(current_user):
-    while True:   
+    """
+    Main transaction management loop for the user.
+    """
+    create_backup_transaction_file(current_user)
+    while True:
         transaction_list = read_transaction_file(current_user)  # Ensure file exists before operations
         dashboard_summary(transaction_list)
+        check_recurring_transactions(current_user)
         show_menu()
         choice = input().strip()
         transaction_list = read_transaction_file(current_user)  # Ensure file exists before operations
@@ -1017,8 +1040,9 @@ def Transaction_Manager(current_user):
             # Code to sort transaction results
         
         elif choice == '9':
-            print("Switching user...")
+            switch_user(current_user)
             # Code to switch user
+        
         elif choice == '10':
             monthly_report(transaction_list)
             # Code to generate monthly reports
@@ -1031,8 +1055,13 @@ def Transaction_Manager(current_user):
             spending_trends(transaction_list)
             # Code to analyze spending trends
 
+        elif choice == '13':
+            recurring_transactions_menu(current_user)
+            # Code to add recuring transactions
+
         elif choice == '0':
             print("Returning to main menu!")
+            create_backup_transaction_file(current_user)
             return
         else:
             print("Invalid choice. Please try again.")
