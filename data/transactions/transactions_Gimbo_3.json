@@ -1,0 +1,12 @@
+[
+    {
+        "transaction_id": "Gimbo1",
+        "type": "income",
+        "user_id": 3,
+        "amount": 10000.0,
+        "date": "2001-04-17",
+        "category": "other",
+        "description": "MOI",
+        "payment_method": "cash"
+    }
+]
