@@ -1,4 +1,3 @@
-from enum import Enum
 import datetime # For date/time handling
 import json # For JSON data storage
 import os
@@ -22,15 +21,13 @@ def show_menu():
 ║ [6] Filter by Category                               ║
 ║ [7] Filter by Amount Range                           ║
 ║ [8] Sort Results                                     ║
-║ [9] Switch User                                      ║
+║ [9] Monthly Budget Tracker                           ║
 ║ [10] Monthly Reports                                 ║
 ║ [11] Category Breakdown                              ║
 ║ [12] Spending Trends                                 ║
 ║ [13] Recurring Transactions                          ║
-║ [14] Monthly Budget Tracker                          ║
-║ [15] Export Transactions to CSV                      ║
-║ [16] Import Transactions from CSV                    ║
-
+║ [14] Export Transactions to CSV                      ║
+║ [15] Import Transactions from CSV                    ║
 ║ [0] Exit                                             ║
 ╚══════════════════════════════════════════════════════╝
 👉 Please enter your choice: """, end="")
@@ -65,6 +62,7 @@ def read_transaction_file(user):
 
     except Exception as e:
         print(f"⚠️ Error while checking/creating file: {e}")
+        return []
 
 def save_transactions_to_file(user, transaction_list):
     """
@@ -109,23 +107,6 @@ def add_transaction(user, new_transaction):
     # Save back to file
     return save_transactions_to_file(user, transactions)
 
-    # === 🧮 Monthly Budget Tracking ===
-    if new_transaction["type"].lower() == "expense":
-        current_month = datetime.now().strftime("%Y-%m")
-
-        users = load_users()
-        if "monthly_expenses" not in users[user["username"]]:
-            users[user["username"]]["monthly_expenses"] = {}
-
-        if current_month not in users[user["username"]]["monthly_expenses"]:
-            users[user["username"]]["monthly_expenses"][current_month] = 0.0
-
-        users[user["username"]]["monthly_expenses"][current_month] += new_transaction["amount"]
-
-        save_users(users)
-
-    print("✅ Transaction added and monthly budget updated.")
-
 def export_transactions_to_csv(user):
     """Export all transactions of the user to a CSV file."""
     transactions = read_transaction_file(user)
@@ -133,34 +114,45 @@ def export_transactions_to_csv(user):
         print("⚠️ No transactions to export.")
         return
 
-    filename = f"{user.name}_transactions.csv"
+    filename = f"{user['name']}_transactions.csv"
+    fieldnames = ["transaction_id", "type", "user_id", "amount", "date", "category", "description", "payment_method"]
+    
     with open(filename, "w", newline="", encoding="utf-8") as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames=transactions[0].keys())
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         writer.writeheader()
-        writer.writerows(transactions)
+        writer.writerows([t.to_dict() for t in transactions])
     
     print(f"✅ Transactions exported successfully to '{filename}'.")
 
 def import_transactions_from_csv(user):
     """Import transactions from a CSV file into the user's record."""
-    filename = f"{user.name}_transactions.csv"
+    filename = f"{user['name']}_transactions.csv"
     
     if not os.path.exists(filename):
-        print(f"⚠️ No CSV file found for user {user.name}.")
+        print(f"⚠️ No CSV file found for user {user['name']}.")
         return
 
     with open(filename, "r", encoding="utf-8") as csvfile:
         reader = csv.DictReader(csvfile)
-        transactions = list(reader)
+        transactions_data = list(reader)
     
-    if not transactions:
+    if not transactions_data:
         print("⚠️ The CSV file is empty.")
         return
     
-    # Convert numeric fields if needed
-    for t in transactions:
+    # Convert CSV data to Transaction objects
+    transactions = []
+    for t in transactions_data:
+        # Convert string values to proper types
         if "amount" in t:
             t["amount"] = float(t["amount"])
+        if "user_id" in t:
+            t["user_id"] = int(t["user_id"]) if t["user_id"].isdigit() else t["user_id"]
+        
+        # Note: from_dict() will handle date conversion internally
+        # Create Transaction object from dict
+        transaction = Transaction.from_dict(t)
+        transactions.append(transaction)
     
     save_transactions_to_file(user, transactions)
     print(f"✅ Transactions imported successfully from '{filename}'.")
@@ -584,6 +576,14 @@ def dashboard_summary(transaction_list):
     Args:
         transaction_list: List of Transaction objects
     """
+    if not transaction_list:
+        print("\n" + "="*40)
+        print("📊 DASHBOARD SUMMARY")
+        print("="*40)
+        print("No transactions found.")
+        print("="*40 + "\n")
+        return
+    
     total_income = sum(t.amount for t in transaction_list if t.type == "income")
     total_expense = sum(t.amount for t in transaction_list if t.type == "expense")
     net_balance = total_income - total_expense
@@ -847,6 +847,7 @@ def category_breakdown(transaction_list):
     print(f"   {balance_indicator} Net Balance:     {balance_symbol}${net_balance:>12,.2f}")
     
     print("="*70 + "\n")
+
 def show_monthly_budget(user):
     """
     Show this month's total expenses and compare them to a set budget.
@@ -865,7 +866,7 @@ def show_monthly_budget(user):
     
     total_spent = sum(monthly_expenses)
     
-    # You can later allow users to set this in settings
+    # Default budget limit
     monthly_limit = 1000.0  
 
     print("\n" + "="*50)
@@ -880,6 +881,16 @@ def show_monthly_budget(user):
     else:
         print(f"⚠️ You are over budget by ${abs(remaining):.2f}!")
     print("="*50 + "\n")
+
+    new_budget = input("Would you like to set a new budget limit? (y/n): ")
+    if new_budget.lower() == "y":
+        while True:
+            try:
+                monthly_limit = float(input("Enter new budget limit: $"))
+                print(f"✅ New budget limit set: ${monthly_limit:.2f}")
+                break
+            except ValueError:
+                print("❌ Invalid input. Please enter a valid number.")
 
 def spending_trends(transaction_list):
     """
@@ -993,12 +1004,15 @@ def create_backup_transaction_file(user):
     Args:
         user: User object
     """
-    original_file = f"transactions_{user["name"]}_{user["id"]}.json"
-    backup_file = f"transactions_{user["name"]}_{user["id"]}_backup.json"
+    original_file = os.path.join('data', 'transactions', f'transactions_{user["name"]}_{user["id"]}.json')
+    backup_file = os.path.join('data', 'transactions', f'transactions_{user["name"]}_{user["id"]}_backup.json')
 
     try:
-        shutil.copyfile(original_file, backup_file)
-        print(f"✅ Backup created: {backup_file}")
+        if os.path.exists(original_file):
+            shutil.copyfile(original_file, backup_file)
+            print(f"✅ Backup created: {backup_file}")
+        else:
+            print(f"⚠️ No transaction file found to backup.")
     except Exception as e:
         print(f"❌ Failed to create backup: {e}")
 # =============================================================Transaction Class=================================================================
@@ -1135,8 +1149,8 @@ def Transaction_Manager(current_user):
             # Code to sort transaction results
         
         elif choice == '9':
-            switch_user(current_user)
-            # Code to switch user
+            show_monthly_budget(current_user)
+            # Code to track monthly budget
         
         elif choice == '10':
             monthly_report(transaction_list)
@@ -1155,16 +1169,13 @@ def Transaction_Manager(current_user):
             # Code to add recuring transactions
         
         elif choice == "14":
-             show_monthly_budget(current_user)
-            # Code to track monthly budget
-
-        elif choice == "15":
             export_transactions_to_csv(current_user)
             # Code to export transactions to CSV
-            
-        elif choice == "16":
+
+        elif choice == "15":
             import_transactions_from_csv(current_user)
             # Code to import transactions from CSV
+            
         elif choice == '0':
             print("Returning to main menu!")
             create_backup_transaction_file(current_user)

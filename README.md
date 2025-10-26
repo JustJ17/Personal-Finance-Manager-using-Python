@@ -73,7 +73,7 @@ python3 main.py
 
 3️⃣ Follow the On-Screen Menu
 ╔══════════════════════════════════════════════════════╗
-║            💰 PERSONAL FINANCE MANAGER 💰            ║
+║            💰 PERSONAL FINANCE MANAGER 💰           ║
 ╠══════════════════════════════════════════════════════╣
 ║ [1] Register                                         ║
 ║ [2] Login                                            ║

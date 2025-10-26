@@ -1,7 +1,7 @@
-from enum import Enum
 import datetime # For date/time handling
 import json # For JSON data storage
 import os # For file operations
+
 
 class RecurringTransaction:
     def __init__(self, transaction, frequency, next_date):
@@ -46,6 +46,9 @@ class RecurringTransaction:
         Returns:
             RecurringTransaction: A new RecurringTransaction instance
         """
+        # Import here to avoid circular import
+        from transaction_manager import Transaction
+        
         transaction = Transaction.from_dict(data['transaction'])
         frequency = data['frequency']
         next_date = datetime.datetime.fromisoformat(data['next_date']).date()
@@ -113,6 +116,7 @@ def read_recurring_transaction_file(user):
 
     except Exception as e:
         print(f"⚠️ Error while checking/creating file: {e}")
+        return []
 
 def save_recurring_transactions_to_file(user, transaction_list):
     """
@@ -145,15 +149,26 @@ def add_recurring_transaction(current_user):
     print("➕ ADD RECURRING TRANSACTION")
     print("="*40)
     
+    # Import here to avoid circular import
+    from transaction_manager import create_transaction
+    
     transaction = create_transaction(current_user)
     if transaction is None:
         print("❌ Transaction creation failed. Returning to menu.")
         return
     while True:
-        frequency = input("Select frequency 1 (monthly) or 2 (weekly): ").strip().lower()
-        if frequency not in ['1', '2']:
+        frequency_input = input("Select frequency [1] Monthly or [2] Weekly: ").strip()
+        if frequency_input == '1':
+            frequency = 'monthly'
+            break
+        elif frequency_input == '2':
+            frequency = 'weekly'
+            break
+        else:
             print("❌ Invalid frequency. Please enter '1' for monthly or '2' for weekly.")
             continue
+    
+    while True:
         next_date_str = input("Enter next occurrence date (YYYY-MM-DD): ").strip()
         try:
             next_date = datetime.datetime.strptime(next_date_str, "%Y-%m-%d").date()
@@ -239,6 +254,7 @@ def apply_recurring_transactions(current_user):
     Args:
         current_user: User object
     """
+    from transaction_manager import add_transaction  # Import here to avoid circular import
     today = datetime.date.today()
     transactions = read_recurring_transaction_file(current_user)
     updated = False
@@ -246,19 +262,25 @@ def apply_recurring_transactions(current_user):
     for rt in transactions:
         if rt.next_date <= today:
             # Apply the transaction
-            current_user.add_transaction(rt.transaction)
+            add_transaction(current_user, rt.transaction)
             print(f"✅ Applied a recurring transaction:\n{rt.transaction}")
 
             # Update next occurrence date based on frequency
+            # Keep incrementing until next_date is in the future
             if rt.frequency == 'monthly':
-                month = rt.next_date.month + 1 if rt.next_date.month < 12 else 1
-                year = rt.next_date.year + 1 if month == 1 else rt.next_date.year
-                rt.next_date = rt.next_date.replace(year=year, month=month)
+                while rt.next_date <= today:
+                    # Add one month
+                    if rt.next_date.month == 12:
+                        rt.next_date = rt.next_date.replace(year=rt.next_date.year + 1, month=1)
+                    else:
+                        rt.next_date = rt.next_date.replace(month=rt.next_date.month + 1)
+                        
             elif rt.frequency == 'weekly':
-                rt.next_date += datetime.timedelta(weeks=1)
-            # Add more frequency handling as needed
+                while rt.next_date <= today:
+                    rt.next_date += datetime.timedelta(weeks=1)
 
             updated = True
+            print(f"📅 Next occurrence updated to: {rt.next_date}")
 
     if updated:
         save_recurring_transactions_to_file(current_user, transactions)

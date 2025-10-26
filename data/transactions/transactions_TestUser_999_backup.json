@@ -1,0 +1,192 @@
+[
+    {
+        "transaction_id": "TestUser1",
+        "type": "income",
+        "user_id": 999,
+        "amount": 3000.0,
+        "date": "2024-06-01",
+        "category": "other",
+        "description": "June Salary",
+        "payment_method": "credit"
+    },
+    {
+        "transaction_id": "TestUser2",
+        "type": "expense",
+        "user_id": 999,
+        "amount": 50.0,
+        "date": "2024-06-15",
+        "category": "food",
+        "description": "Grocery shopping",
+        "payment_method": "cash"
+    },
+    {
+        "transaction_id": "TestUser3",
+        "type": "expense",
+        "user_id": 999,
+        "amount": 100.0,
+        "date": "2024-06-20",
+        "category": "transport",
+        "description": "Gas for car",
+        "payment_method": "debit"
+    },
+    {
+        "transaction_id": "TestUser4",
+        "type": "income",
+        "user_id": 999,
+        "amount": 500.0,
+        "date": "2024-07-05",
+        "category": "other",
+        "description": "Freelance project payment",
+        "payment_method": "credit"
+    },
+    {
+        "transaction_id": "TestUser5",
+        "type": "expense",
+        "user_id": 999,
+        "amount": 200.0,
+        "date": "2024-07-10",
+        "category": "entertainment",
+        "description": "Concert tickets",
+        "payment_method": "credit"
+    },
+    {
+        "transaction_id": "TestUser6",
+        "type": "expense",
+        "user_id": 999,
+        "amount": 200.0,
+        "date": "2024-07-18",
+        "category": "food",
+        "description": "Restaurant dinner with friends",
+        "payment_method": "debit"
+    },
+    {
+        "transaction_id": "TestUser7",
+        "type": "expense",
+        "user_id": 999,
+        "amount": 150.0,
+        "date": "2024-08-03",
+        "category": "transport",
+        "description": "Uber rides",
+        "payment_method": "credit"
+    },
+    {
+        "transaction_id": "TestUser8",
+        "type": "expense",
+        "user_id": 999,
+        "amount": 200.0,
+        "date": "2024-08-12",
+        "category": "entertainment",
+        "description": "Movie streaming subscriptions",
+        "payment_method": "debit"
+    },
+    {
+        "transaction_id": "TestUser9",
+        "type": "income",
+        "user_id": 999,
+        "amount": 4000.0,
+        "date": "2024-09-01",
+        "category": "other",
+        "description": "September Salary + Bonus",
+        "payment_method": "credit"
+    },
+    {
+        "transaction_id": "TestUser10",
+        "type": "expense",
+        "user_id": 999,
+        "amount": 300.0,
+        "date": "2024-09-08",
+        "category": "food",
+        "description": "Weekly groceries",
+        "payment_method": "cash"
+    },
+    {
+        "transaction_id": "TestUser11",
+        "type": "expense",
+        "user_id": 999,
+        "amount": 500.0,
+        "date": "2024-09-15",
+        "category": "other",
+        "description": "New laptop accessories",
+        "payment_method": "credit"
+    },
+    {
+        "transaction_id": "TestUser12",
+        "type": "expense",
+        "user_id": 999,
+        "amount": 1200.0,
+        "date": "2024-10-01",
+        "category": "other",
+        "description": "Monthly rent payment",
+        "payment_method": "debit"
+    },
+    {
+        "transaction_id": "TestUser13",
+        "type": "expense",
+        "user_id": 999,
+        "amount": 600.0,
+        "date": "2024-10-10",
+        "category": "transport",
+        "description": "Car insurance",
+        "payment_method": "credit"
+    },
+    {
+        "transaction_id": "TestUser14",
+        "type": "expense",
+        "user_id": 999,
+        "amount": 1500.0,
+        "date": "2025-10-15",
+        "category": "entertainment",
+        "description": "Weekend trip to beach resort",
+        "payment_method": "credit"
+    },
+    {
+        "transaction_id": "TestUser15",
+        "type": "expense",
+        "user_id": 999,
+        "amount": 450.0,
+        "date": "2025-10-20",
+        "category": "other",
+        "description": "Utilities and internet bill",
+        "payment_method": "debit"
+    },
+    {
+        "transaction_id": "TestUserRec1",
+        "type": "income",
+        "user_id": 999,
+        "amount": 5000.0,
+        "date": "2024-11-01",
+        "category": "transport",
+        "description": "Monthly rent payment",
+        "payment_method": "cash"
+    },
+    {
+        "transaction_id": "TestUserRec2",
+        "type": "expense",
+        "user_id": 999,
+        "amount": 150.0,
+        "date": "2024-10-28",
+        "category": "food",
+        "description": "Weekly groceries",
+        "payment_method": "cash"
+    },
+    {
+        "transaction_id": "TestUserRec3",
+        "type": "income",
+        "user_id": 999,
+        "amount": 3000.0,
+        "date": "2024-11-01",
+        "category": "other",
+        "description": "Monthly salary",
+        "payment_method": "credit"
+    },
+    {
+        "transaction_id": "TestUserRec4",
+        "type": "expense",
+        "user_id": 999,
+        "amount": 50.0,
+        "date": "2024-10-15",
+        "category": "entertainment",
+        "description": "Streaming service subscription",
+        "payment_method": "credit"
+    }
+]

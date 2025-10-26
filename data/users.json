@@ -18,6 +18,22 @@
         "email": "mo@mo.com",
         "balance": 0.0,
         "Number_of_transactions": 0
+    },
+    "TestUser": {
+        "id": 999,
+        "name": "TestUser",
+        "password": "0ae628d307a9e72e102d86eb12ed35d07f3438e7e278ca6b0695cd094fe7f833",
+        "email": "testuser@example.com",
+        "balance": 2050.0,
+        "number_of_transactions": 12,
+        "monthly_expenses": {
+            "2024-06": 150.0,
+            "2024-07": 400.0,
+            "2024-08": 350.0,
+            "2024-09": 800.0,
+            "2024-10": 1800.0,
+            "2025-10": 1950.0
+        }
     }
     
 }

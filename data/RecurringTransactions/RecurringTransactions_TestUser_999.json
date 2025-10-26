@@ -1,0 +1,86 @@
+[
+    {
+        "transaction": {
+            "transaction_id": "TestUserRec1",
+            "type": "expense",
+            "user_id": 999,
+            "amount": 1200.0,
+            "date": "2024-11-01",
+            "category": "other",
+            "description": "Monthly rent payment",
+            "payment_method": "debit"
+        },
+        "frequency": "monthly",
+        "next_date": "2025-11-01"
+    },
+    {
+        "transaction": {
+            "transaction_id": "TestUserRec2",
+            "type": "expense",
+            "user_id": 999,
+            "amount": 150.0,
+            "date": "2024-10-28",
+            "category": "food",
+            "description": "Weekly groceries",
+            "payment_method": "cash"
+        },
+        "frequency": "weekly",
+        "next_date": "2025-10-27"
+    },
+    {
+        "transaction": {
+            "transaction_id": "TestUserRec3",
+            "type": "income",
+            "user_id": 999,
+            "amount": 3000.0,
+            "date": "2024-11-01",
+            "category": "other",
+            "description": "Monthly salary",
+            "payment_method": "credit"
+        },
+        "frequency": "monthly",
+        "next_date": "2025-11-01"
+    },
+    {
+        "transaction": {
+            "transaction_id": "TestUserRec4",
+            "type": "expense",
+            "user_id": 999,
+            "amount": 50.0,
+            "date": "2024-10-15",
+            "category": "entertainment",
+            "description": "Streaming service subscription",
+            "payment_method": "credit"
+        },
+        "frequency": "monthly",
+        "next_date": "2025-11-15"
+    },
+    {
+        "transaction": {
+            "transaction_id": "TestUserRec5",
+            "type": "expense",
+            "user_id": 999,
+            "amount": 80.0,
+            "date": "2024-10-26",
+            "category": "transport",
+            "description": "Weekly fuel for car",
+            "payment_method": "debit"
+        },
+        "frequency": "weekly",
+        "next_date": "2025-11-01"
+    },
+    {
+        "transaction": {
+            "transaction_id": "TestUser6",
+            "type": "expense",
+            "user_id": 999,
+            "amount": 500.0,
+            "date": "2001-12-12",
+            "category": "transport",
+            "description": "No description provided.",
+            "payment_method": "other"
+        },
+        "frequency": "monthly",
+        "next_date": "2025-10-27"
+    }
+]
