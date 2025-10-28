@@ -83,14 +83,8 @@ class User_Manager:
             "name": username,
             "password": hashed_pw,
             "email": email,
-            "balance": 0.0,
             "number_of_transactions": 0,
-            "monthly_budget": 0.0,
-            "monthly_expenses": 0.0,
-            "savings_goal": {
-                "goal_name": "New Laptop",
-                "target_amount": 1000
-            }
+            "monthly_budget": 1000.0,
         }
 
         # ✅ Save updated users
