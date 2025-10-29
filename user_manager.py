@@ -83,9 +83,11 @@ class User_Manager:
             "name": username,
             "password": hashed_pw,
             "email": email,
+            "balance": 0.0,
             "number_of_transactions": 0,
-            "monthly_budget": 1000.0,
+            "monthly_budget_limit": 1000.0,
         }
+        
 
         # ✅ Save updated users
         self.save_users()

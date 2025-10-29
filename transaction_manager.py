@@ -151,7 +151,7 @@ def import_transactions_from_csv(user):
         
         # Note: from_dict() will handle date conversion internally
         # Create Transaction object from dict
-        transaction = Transaction.from_dict(t)
+        transaction = Transaction.from_dict(t) # I change to dict because I know that my save function expects dicts, and it will be easier this way rather than implementing a save in this function
         transactions.append(transaction)
     
     save_transactions_to_file(user, transactions)
@@ -867,8 +867,7 @@ def show_monthly_budget(user):
     total_spent = sum(monthly_expenses)
     
     # Default budget limit
-    monthly_limit = 1000.0  
-
+    monthly_limit = user["monthly_budget_limit"]     
     print("\n" + "="*50)
     print("📅 MONTHLY BUDGET TRACKER")
     print("="*50)
@@ -887,6 +886,7 @@ def show_monthly_budget(user):
         while True:
             try:
                 monthly_limit = float(input("Enter new budget limit: $"))
+                user["monthly_budget_limit"]     = monthly_limit
                 print(f"✅ New budget limit set: ${monthly_limit:.2f}")
                 break
             except ValueError:

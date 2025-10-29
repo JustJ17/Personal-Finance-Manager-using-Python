@@ -50,16 +50,6 @@
         "payment_method": "credit"
     },
     {
-        "transaction_id": "TestUser6",
-        "type": "expense",
-        "user_id": 999,
-        "amount": 200.0,
-        "date": "2024-07-18",
-        "category": "food",
-        "description": "Restaurant dinner with friends",
-        "payment_method": "debit"
-    },
-    {
         "transaction_id": "TestUser7",
         "type": "expense",
         "user_id": 999,
@@ -188,5 +178,25 @@
         "category": "entertainment",
         "description": "Streaming service subscription",
         "payment_method": "credit"
+    },
+    {
+        "transaction_id": "TestUser20",
+        "type": "income",
+        "user_id": 999,
+        "amount": 100.0,
+        "date": "2025-10-29",
+        "category": "other",
+        "description": "Full marks in the project!",
+        "payment_method": "cash"
+    },
+    {
+        "transaction_id": "TestUserRec2",
+        "type": "expense",
+        "user_id": 999,
+        "amount": 150.0,
+        "date": "2024-10-28",
+        "category": "food",
+        "description": "Weekly groceries",
+        "payment_method": "cash"
     }
 ]

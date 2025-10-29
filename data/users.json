@@ -4,7 +4,6 @@
         "email": "mo",
         "balance": 0.0
     },
-
     "Gimy": {
         "id": 2,
         "password": "4883ea002e9cc83f23faaf922bcd92d9ed4676e6f4b46868550c42e7dbc98ab5",
@@ -26,14 +25,32 @@
         "email": "testuser@example.com",
         "balance": 2050.0,
         "number_of_transactions": 12,
-        "monthly_expenses": {
-            "2024-06": 150.0,
-            "2024-07": 400.0,
-            "2024-08": 350.0,
-            "2024-09": 800.0,
-            "2024-10": 1800.0,
-            "2025-10": 1950.0
-        }
+        "monthly_budget_limit": 1000.0
+    },
+    "newuser": {
+        "id": 1000,
+        "name": "newuser",
+        "password": "8c309ef267a320c7d30f9de3dd126d3fb4f0a9ed4760a2513edb7f6cc2a25808",
+        "email": "mail@mail.com",
+        "number_of_transactions": 0,
+        "monthly_budget": 1000.0
+    },
+    "newuser11": {
+        "id": 1001,
+        "name": "newuser11",
+        "password": "f8cd644950ff09aed6602451b5024d095fad475f3c7d01c4a778022a6f1f877e",
+        "email": "goodmail@mail.com",
+        "balance": 0.0,
+        "number_of_transactions": 0,
+        "monthly_budget_limit": 1000.0
+    },
+    "Username111": {
+        "id": 1002,
+        "name": "Username111",
+        "password": "de59909729e0ad1a28c8a6832637c5a3cb77b6c03ae31fc7084bb80f1fb534d0",
+        "email": "good@mail.com",
+        "balance": 0.0,
+        "number_of_transactions": 0,
+        "monthly_budget_limit": 1000.0
     }
-    
 }
