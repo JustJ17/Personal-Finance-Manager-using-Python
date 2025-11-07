@@ -35,8 +35,7 @@ This project demonstrates professional programming practices including data vali
 #### 👤 User Management
 - **Multi-user Support**: Create and manage multiple user accounts
 - **Secure Authentication**: Password hashing using SHA-256
-- **User Profiles**: Store user-specific data including balance, budget, and transaction history
-- **Profile Switching**: Seamlessly switch between different user accounts
+- **User Profiles**: Store user-specific data including transaction history and budget settings
 
 #### 💳 Transaction Management
 - **Add Transactions**: Record income and expenses with detailed information
@@ -72,9 +71,10 @@ This project demonstrates professional programming practices including data vali
 
 #### 1️⃣ Recurring Transactions
 - Set up automatic recurring income/expenses
-- Configurable frequency (daily, weekly, monthly)
+- Configurable frequency (weekly, monthly)
 - Automatic processing of due transactions
 - View and manage all recurring transactions
+- Reminders for due bills
 
 #### 2️⃣ Monthly Budget Tracker
 - Set monthly spending limits
@@ -87,12 +87,6 @@ This project demonstrates professional programming practices including data vali
 - Import transactions from CSV files
 - Preserve all transaction details
 - Easy data backup and sharing
-
-#### 4️⃣ Savings Goals
-- Set custom savings goals
-- Track progress toward financial targets
-- Visual progress indicators
-- Goal achievement notifications
 
 ---
 
@@ -128,8 +122,8 @@ python main.py
 
 1. **Register a new user**
    - Choose option `[1] Register`
-   - Enter username (minimum 3 characters, alphanumeric)
-   - Create a strong password (minimum 6 characters, must include uppercase, lowercase, number, and special character)
+   - Enter username (minimum 3 characters)
+   - Create a password (minimum 6 characters)
    - Provide a valid email address
 
 2. **Login**
@@ -147,14 +141,13 @@ python main.py
 [6]  Filter by Category         - View specific categories
 [7]  Filter by Amount Range     - Search by amount
 [8]  Sort Results               - Organize transaction display
-[9]  Switch User                - Change active user
+[9]  Monthly Budget Tracker     - Track budget vs spending
 [10] Monthly Reports            - View monthly financial summary
 [11] Category Breakdown         - All-time category analysis
 [12] Spending Trends            - Visual spending chart
 [13] Recurring Transactions     - Manage automatic transactions
-[14] Monthly Budget Tracker     - Track budget vs spending
-[15] Export to CSV              - Export transaction data
-[16] Import from CSV            - Import transaction data
+[14] Export to CSV              - Export transaction data
+[15] Import from CSV            - Import transaction data
 [0]  Exit                       - Save and quit
 ```
 
@@ -183,8 +176,9 @@ python main.py
 1. Select `[13] Recurring Transactions`
 2. Choose `[1] Add Recurring Transaction`
 3. Set up transaction details
-4. Select frequency (Daily/Weekly/Monthly)
-5. The system automatically processes due transactions
+4. Select frequency (Weekly/Monthly)
+5. Enter next occurrence date
+6. The system automatically processes due transactions on login
 
 ---
 
@@ -197,14 +191,21 @@ personal-finance-manager/
 ├── transaction_manager.py               # Transaction operations & reports
 ├── user_manager.py                      # User authentication & management
 ├── recurring_transactions_manager.py    # Recurring transaction logic
+├── README.md                            # Documentation
+├── Documentation.md                     # Extended documentation
+├── FUNCTIONS_AND_CLASSES_DOCUMENTATION.md  # Technical documentation
+├── TEST_PLAN.md                         # Test plan
+├── QUICK_START_TESTING.md              # Quick start guide
 │
 ├── data/
 │   ├── users.json                       # User account data
-│   └── transactions/
-│       ├── transactions_username_id.json    # User transaction files
-│       └── transactions_username_id_backup.json  # Backup files
+│   ├── transactions/
+│   │   ├── transactions_username_id.json         # User transaction files
+│   │   └── transactions_username_id_backup.json  # Backup files
+│   └── RecurringTransactions/
+│       └── RecurringTransactions_username_id.json # Recurring transactions
 │
-└── README.md                            # This file
+└── __pycache__/                         # Python cache files
 ```
 
 ### Module Descriptions
@@ -224,15 +225,15 @@ personal-finance-manager/
 
 #### `user_manager.py`
 - User registration with validation
-- Secure password hashing
+- Secure password hashing (SHA-256)
 - User authentication
 - Profile management
-- Savings goal tracking
 
 #### `recurring_transactions_manager.py`
 - Recurring transaction setup
 - Automatic transaction processing
-- Frequency management (daily/weekly/monthly)
+- Frequency management (weekly/monthly)
+- Bill reminders
 
 ---
 
@@ -279,14 +280,8 @@ personal-finance-manager/
         "name": "username",
         "password": "hashed_password_sha256",
         "email": "user@example.com",
-        "balance": 1500.00,
         "number_of_transactions": 25,
-        "monthly_budget": 2000.00,
-        "monthly_expenses": 0.0,
-        "savings_goal": {
-            "goal_name": "New Laptop",
-            "target_amount": 1000
-        }
+        "monthly_budget_limit": 2000.00
     }
 }
 ```
@@ -320,9 +315,11 @@ personal-finance-manager/
 - [ ] Cloud synchronization
 - [ ] Mobile app version
 - [ ] Advanced analytics and predictions
-- [ ] Bill reminder system
 - [ ] Financial health scoring
 - [ ] Export to PDF reports
+- [ ] Daily recurring transaction frequency
+- [ ] Savings goals tracking
+- [ ] Password recovery system
 
 ---
 
